@@ -13,12 +13,15 @@ spec:
       serviceAccountName: wego-app-service-account
       containers:
         - name: wego-app
-          image: "ghcr.io/weaveworks/wego-app:{{.Chart.AppVersion}}"
-          args: ["ui", "run", "-l", "--helm-repo-namespace","{{.Values.namespace}}"]
+          image: "{{.Values.containerRegistry}}:{{.Values.image}}"
+          args: [ "-l", "--helm-repo-namespace","{{.Values.namespace}}" ]
           ports:
             - containerPort: 9001
               protocol: TCP
           imagePullPolicy: IfNotPresent
+          env:
+          - name: WEAVE_GITOPS_AUTH_ENABLED
+            value: "true"
   selector:
     matchLabels:
       app: wego-app
@@ -26,39 +29,24 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: read-resources
+  name: weave-gitops-binding
 subjects:
   - kind: ServiceAccount
     name: wego-app-service-account
     namespace: {{.Values.namespace}}
 roleRef:
   kind: ClusterRole
-  name: resources-reader
+  name: weave-gitops-role
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: resources-reader
+  name: weave-gitops-role
 rules:
   - apiGroups: [""]
-    resources: ["secrets"]
-    verbs: ["get","create"]
-  - apiGroups: ["wego.weave.works"]
-    resources: [ "apps" ]
-    verbs: [ "*" ]
-  - apiGroups: ["kustomize.toolkit.fluxcd.io"]
-    resources: [ "kustomizations" ]
-    verbs: [ "*" ]
-  - apiGroups: ["helm.toolkit.fluxcd.io"]
-    resources: [ "helmreleases" ]
-    verbs: [ "*" ]
-  - apiGroups: ["source.toolkit.fluxcd.io"]
-    resources: [ "helmrepositories" ]
-    verbs: [ "*" ]
-  - apiGroups: ["source.toolkit.fluxcd.io"]
-    resources: [ "gitrepositories" ]
-    verbs: [ "*" ]
+    resources: [ "users", "groups", "serviceaccounts" ]
+    verbs: [ "impersonate" ]
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -74,7 +62,6 @@ metadata:
   name: wego-app
   namespace: {{.Values.namespace}}
 spec:
-  type: NodePort
   selector:
     app: wego-app
   ports:

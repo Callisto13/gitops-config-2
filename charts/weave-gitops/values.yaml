@@ -1,1 +1,4 @@
 namespace: flux-system
+image: v0.6.2
+containerRegistry: ghcr.io/weaveworks/wego-app
+adminPassword: JDJiJDEyJDhXM1o5a1BEVWdScWVPTFVCWExDTU9nVk1kWTBIdmdEejNQN3RlU2N4NkhtNFBHZnFOSk1D
