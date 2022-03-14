@@ -18,9 +18,10 @@ spec:
             - "-l"
             - "--helm-repo-namespace"
             - "{{.Values.namespace}}"
-            {{- if.Values.extraServerArgs }}
-            {{ toYaml .Values.extraServerArgs | nindent 12 }}
-            {{- end }}
+            - "--tls-cert-file"
+            - "./localhost.pem"
+            - "--tls-private-key-file"
+            - "./localhost-key.pem"
           ports:
             - containerPort: 9001
               protocol: TCP
