@@ -19,9 +19,9 @@ spec:
             - "--helm-repo-namespace"
             - "{{.Values.namespace}}"
             - "--tls-cert-file"
-            - "./localhost.pem"
+            - "/root/localhost.pem"
             - "--tls-private-key-file"
-            - "./localhost-key.pem"
+            - "/root/localhost-key.pem"
           ports:
             - containerPort: 9001
               protocol: TCP
