@@ -17,12 +17,13 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: wego-admin-user-role
+  namespace: {{.Values.namespace}}
 rules:
   - apiGroups: [""]
-    resources: ["secrets"]
+    resources: ["secrets", "pods" ]
     verbs: [ "get", "list" ]
   - apiGroups: ["apps"]
-    resources: [ "deployments" ]
+    resources: [ "deployments", "replicasets", "pods" ]
     verbs: [ "get", "list" ]
   - apiGroups: ["kustomize.toolkit.fluxcd.io"]
     resources: [ "kustomizations" ]
@@ -33,11 +34,14 @@ rules:
   - apiGroups: ["source.toolkit.fluxcd.io"]
     resources: [ "buckets", "helmcharts", "gitrepositories", "helmrepositories" ]
     verbs: [ "get", "list" ]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "watch", "list"]
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: wego-admin-password-hash
+  name: admin-password-hash
   namespace: {{.Values.namespace}}
 type: Opaque
 data:
