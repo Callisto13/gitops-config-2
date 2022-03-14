@@ -18,7 +18,9 @@ spec:
             - "-l"
             - "--helm-repo-namespace"
             - "{{.Values.namespace}}"
-            - {{ toYaml .Values.extraServerArgs | indent 10 }}
+            {{- if.Values.extraServerArgs }}
+            {{ toYaml .Values.extraServerArgs }}
+            {{- end }}
           ports:
             - containerPort: 9001
               protocol: TCP
